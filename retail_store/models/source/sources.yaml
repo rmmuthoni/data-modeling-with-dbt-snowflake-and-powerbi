@@ -22,6 +22,7 @@ sources:
               - accepted_values: 
                   arguments:
                     values: ["F", "M", "Other"]
+            
 
       - name: fact_sales 
         columns:
@@ -39,6 +40,27 @@ sources:
             description: The price of the product at the point of sale
             data_tests:
               - generic_non_negative
+          - name: customer_sk
+            description: Surrogate key for the customer attached to this sale 
+            data_tests:
+              - relationships:
+                  arguments:
+                    to: ref("bronze_customer")
+                    field: customer_sk
+          - name: product_sk
+            description: Surrogate key for the product 
+            data_tests:
+              - relationships:
+                  arguments:
+                    to: ref("bronze_product")
+                    field: product_sk
+          - name: store_sk
+            description: Surrogate key for the store, links back to to bronze_stsores table 
+            data_tests:
+              - relationships:
+                  arguments:
+                    to: ref("bronze_store")
+                    field: store_sk
 
       - name: dim_product
         description: A source table that contains the details of the products in the operational system
