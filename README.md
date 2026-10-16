@@ -15,6 +15,11 @@ flowchart LR
 	F -. validate .-> D
 ```
 
+<img width="1523" height="560" alt="Retail Store Pipeline - Dbt, Snowflake, PowerBI" src="https://github.com/user-attachments/assets/ab232a47-0b05-4664-a6f8-058043db4b3b" />
+
+
+
+
 **Flow:** Source data is loaded to Snowflake before transformation (ELT). dbt manages transformations and dependencies within the warehouse. Business analysts use the curated gold layer through Power BI.
 
 ## Objectives
