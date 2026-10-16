@@ -1,0 +1,11 @@
+sources:
+  - name: source
+    database: retail_store
+    schema: source 
+    tables:
+      - name: dim_date
+      - name: dim_customer
+      - name: fact_sales 
+      - name: dim_product
+      - name: dim_store 
+      - name: fact_returns
