@@ -35,3 +35,7 @@ models:
     bronze:
       +materialized: view
       schema: bronze
+
+seeds:
+  retail_store:
+    +schema: bronze
