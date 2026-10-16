@@ -78,3 +78,4 @@ Exact versions, source systems, schemas, credentials, model names, and ingestion
 - Define how late-arriving data, corrections, deletes, and incremental rebuilds are handled.
 - Apply role-based access and limit sensitive customer data to what reporting requires.
 - Document model owners, refresh cadence, metric definitions, and known limitations.
+- Data Lineage
