@@ -78,7 +78,3 @@ Exact versions, source systems, schemas, credentials, model names, and ingestion
 - Define how late-arriving data, corrections, deletes, and incremental rebuilds are handled.
 - Apply role-based access and limit sensitive customer data to what reporting requires.
 - Document model owners, refresh cadence, metric definitions, and known limitations.
-
-## Project-specific setup
-
-This README describes the intended architecture. As implementation details are finalized, add the actual source systems, ingestion process, Snowflake database/schema layout, dbt model structure, deployment schedule, and Power BI workspace or report links.
