@@ -5,7 +5,67 @@ sources:
     tables:
       - name: dim_date
       - name: dim_customer
+        columns:
+          - name: customer_code 
+            description: Primary key, unique identifies each customer in the source operational system
+            data_tests:
+              - unique 
+              - not_null
+          - name: customer_sk 
+            description: Surrogate Key, uniquely identifies each customer in the warehouse 
+            data_tests:
+              - unique 
+              - not_null
+          - name: gender 
+            description: Identifies the gender of the customer in the operaitonal systems
+            data_tests:
+              - accepted_values: 
+                  arguments:
+                    values: ["F", "M", "Other"]
+
       - name: fact_sales 
+        columns:
+          - name: sales_id
+            data_tests:
+              - unique 
+              - not_null
+          - name: payment_method
+            description: Holds the payment method used to pay for goods
+            data_tests:
+              - accepted_values:
+                  arguments:
+                    values: ["Card", "Cash", "Gift Card", "Digital Wallet"]
+          - name: unit_price
+            description: The price of the product at the point of sale
+            data_tests:
+              - generic_non_negative
+
       - name: dim_product
+        description: A source table that contains the details of the products in the operational system
+        columns:
+          - name: product_sk
+            description: Surrogate key, Unique identifies each product in the warehouse
+            data_tests:
+              - not_null
+              - unique 
+          - name: product_code 
+            description: Primary Key, uniquely identifes each product in the Operatioinal System 
+            data_tests:
+              - not_null
+              - unique
+
       - name: dim_store 
+        description: Source table that contains the name and the details of all the stores
+        columns:
+          - name: store_sk
+            description: Surrogate key. Uniquely identifies each store in the warehouse 
+            data_tests:
+              - not_null
+              - unique 
+          - name: store_code 
+            description: Primary Key. Unique identifes each store in the source operational system
+            data_tests:
+              - unique 
+              - not_null
       - name: fact_returns
+        description: A source table from the opraitonal systems that holds details of all returned products
