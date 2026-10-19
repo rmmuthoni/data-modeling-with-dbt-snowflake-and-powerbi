@@ -4,13 +4,13 @@ WITH bronze_customer AS (
 
 cleaned_customer AS (
     SELECT 
-        trim(customer_code) AS customer_code,
-        trim(customer_sk) AS customer_sk,
-        nullif(trim(first_name), '') AS first_name,
-        nullif(trim(last_name), '') AS last_name,
+        TRIM(customer_code) AS customer_code,
+        TRIM(customer_sk) AS customer_sk,
+        NULLIF(TRIM(first_name), '') AS first_name,
+        NULLIF(TRIM(last_name), '') AS last_name,
         gender,
-        regexp_replace(phone, '[^0-9+]', '') AS phone,
-        nullif(trim(email), '') AS email,
+        REGEXP_REPLACE(phone, '[^0-9+]', '') AS phone,
+        NULLIF(TRIM(email), '') AS email,
         
         CASE
             WHEN loyalty_tier = 'None' THEN 'Retail Mass' ELSE loyalty_tier
