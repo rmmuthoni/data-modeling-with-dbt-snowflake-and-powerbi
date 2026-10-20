@@ -62,6 +62,7 @@ finally AS (
         customer_sales_summary.loyalty_tier,
         total_gross_amount,
         lifetime_value,
+        gender,
         bronze_date_max.date AS most_recent_order_date,
         bronze_date_min.date AS first_order_date
     FROM customer_sales_summary
