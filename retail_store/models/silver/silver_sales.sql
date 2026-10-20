@@ -1,55 +1,46 @@
 WITH bronze_sales AS (
     SELECT 
-        sales_id,
-        product_sk, 
-        customer_sk,
-        gross_amount, 
-        payment_method,
-        quantity,
-        unit_price,
-        date_sk
-    FROM {{ ref('bronze_sales') }}
+        CAST(sales_id AS BIGINT) AS sales_id,
+        CAST(date_sk AS BIGINT) AS date_sk,
+        CAST(product_sk AS BIGINT) AS product_sk,
+        CAST(product_sk AS BIGINT) AS customer_sk,
+        promotion_sk,
+        COALESCE(quantity, 0) AS quantity,
+        COALESCE(unit_price, 0) AS unit_price,
+        COALESCE(gross_amount, 0) AS gross_amount,
+        COALESCE(discount_amount, 0) AS discount_amount,
+        COALESCE(net_amount, 0) AS net_amount,
+        NULLIF(TRIM(payment_method, 0), '') payment_method,
+
+        -- Metadata Columns 
+        _ingested_at,
+        source_system
+    FROM {{ ref('bronze_sales') }} 
 ),
 
-bronze_product AS (
-    SELECT
-        product_sk, 
-        category
-    FROM {{ ref('bronze_product') }}
-), 
-
-bronze_customer AS (
+-- Remove Deuplicates if Any 
+deduplication AS (
     SELECT 
-        customer_sk,
-        gender,
-        first_name, 
-        last_name 
-    FROM {{ ref('bronze_customer') }}
-),
-
-bronze_date AS (
-    SELECT
-        date_sk,
-        date
-    FROM {{ ref('bronze_date') }}
+        *,
+        ROW_NUMBER() OVER(PARTITION BY sales_id ORDER BY _ingested_at DESC) AS row_number
+    FROM bronze_sales
 ),
 
 finally AS (
     SELECT 
-        bronze_sales.sales_id, 
-        bronze_sales.quantity,
-        bronze_sales.unit_price,
-        bronze_sales.gross_amount,
-        bronze_sales.payment_method,
-        bronze_product.category,
-        bronze_customer.first_name,
-        bronze_customer.last_name,
-        bronze_customer.gender,
-        bronze_date.date
-    FROM bronze_sales
-    LEFT JOIN bronze_product USING(product_sk)
-    LEFT JOIN bronze_customer USING(customer_sk)
-    LEFT JOIN bronze_date USING(date_sk)
+        sales_id,
+        date_sk,
+        product_sk,
+        customer_sk,
+        promotion_sk,
+        quantity,
+        unit_price,
+        gross_amount,
+        discount_amount,
+        net_amount,
+        payment_method
+    FROM deduplication
+    WHERE row_number = 1
 )
 
 SELECT * FROM finally

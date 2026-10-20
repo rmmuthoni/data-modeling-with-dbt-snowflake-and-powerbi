@@ -38,6 +38,12 @@ models:
     silver:
       +materialized: view
       schema: silver
+    gold:
+      +materialized: table
+      schema: gold
+    silver:
+      +materialized: view
+      schema: silver
 
 seeds:
   retail_store:
