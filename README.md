@@ -84,3 +84,8 @@ Exact versions, source systems, schemas, credentials, model names, and ingestion
 - Apply role-based access and limit sensitive customer data to what reporting requires.
 - Document model owners, refresh cadence, metric definitions, and known limitations.
 - Data Lineage
+
+The final reporting layer will use Power BI, here is a screenshot of the dashboard - Customer Demographics
+
+<img width="1463" height="767" alt="Screenshot 2026-10-23 124050" src="https://github.com/user-attachments/assets/6130a884-10a8-4fa5-8a55-82a5bbf4891d" />
+
