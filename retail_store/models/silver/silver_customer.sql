@@ -1,5 +1,16 @@
+{{
+  config(
+    materialized = 'incremental',
+    unique_key = 'customer_code',
+    incremental_strategy = 'merge'
+    )
+}}
+
 WITH bronze_customer AS (
     SELECT * FROM {{ ref('bronze_customer') }}
+    {% if is_incremental() %}
+      WHERE signup_date > (SELECT MAX(signup_date) FROM {{ this }})
+    {% endif %}
 ),
 
 cleaned_customer AS (
@@ -41,7 +52,9 @@ finally AS (
         phone,
         email,
         loyalty_tier,
-        signup_date
+        signup_date,
+        _ingested_at,
+        _source_system
     FROM deduplicated_customer 
     WHERE row_number = 1
 )

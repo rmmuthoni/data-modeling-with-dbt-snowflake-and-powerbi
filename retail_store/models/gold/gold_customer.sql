@@ -1,17 +1,20 @@
-WITH silver_customer AS (
+{{
+  config(
+    materialized = 'incremental',
+    unique_key = 'customer_code',
+    incremental_strategy = 'merge'
+    )
+}}
+
+WITH silver_customer_details AS (
     SELECT 
-        customer_code,
-        customer_sk,
-        full_name,
-        first_name,
-        last_name,
-        gender,
-        phone,
-        email,
-        loyalty_tier,
-        signup_date
+        *
     FROM {{ ref('silver_customer') }}
+    {% if is_incremental() %}
+      WHERE signup_date > (SELECT MAX(signup_date) FROM {{ this }})
+    {% endif %}
 ),
+
 
 silver_sales_aggregated AS (
     SELECT 
@@ -36,22 +39,24 @@ bronze_date AS (
 
 customer_sales_summary AS (
     SELECT 
-        silver_customer.customer_sk,
-        silver_customer.customer_code,
-        silver_customer.full_name,
-        silver_customer.first_name,
-        silver_customer.last_name,
-        silver_customer.gender,
-        silver_customer.phone,
-        silver_customer.email,
-        silver_customer.signup_date,
-        silver_customer.loyalty_tier,
+        silver_customer_details.customer_sk,
+        silver_customer_details.customer_code,
+        silver_customer_details.full_name,
+        silver_customer_details.first_name,
+        silver_customer_details.last_name,
+        silver_customer_details.gender,
+        silver_customer_details.phone,
+        silver_customer_details.email,
+        silver_customer_details.signup_date,
+        silver_customer_details.loyalty_tier,
         silver_sales_aggregated.max_date_sk AS max_date_sk,
         silver_sales_aggregated.min_date_sk AS min_date_sk,
         COALESCE(silver_sales_aggregated.total_quantity, 0) AS total_quantity,
         COALESCE(silver_sales_aggregated.total_gross_amount, 0) AS total_gross_amount,
-        COALESCE(silver_sales_aggregated.total_net_amount, 0) AS lifetime_value
-    FROM silver_customer
+        COALESCE(silver_sales_aggregated.total_net_amount, 0) AS lifetime_value,
+        _ingested_at,
+        _source_system
+    FROM silver_customer_details
     LEFT JOIN silver_sales_aggregated USING(customer_sk)
 ),
 
@@ -70,7 +75,9 @@ finally AS (
         lifetime_value,
         gender,
         bronze_date_max.date AS most_recent_order_date,
-        bronze_date_min.date AS first_order_date
+        bronze_date_min.date AS first_order_date,
+         _ingested_at,
+        _source_system
     FROM customer_sales_summary
     LEFT JOIN bronze_date AS bronze_date_max 
         ON bronze_date_max.date_sk = customer_sales_summary.max_date_sk
