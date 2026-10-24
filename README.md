@@ -42,7 +42,7 @@ Power BI should use approved gold models so core business logic is not duplicate
 ## Technologies
 
 - **Snowflake** — cloud data warehouse and execution platform.
-- **dbt** — SQL transformations, model dependencies, tests, and documentation.
+- **dbt** — SQL transformations, model dependencies, tests, documentation, and incremental models.
 - **Power BI** — semantic modeling, dashboards, and reports.
 - **ELT ingestion** — extracts data from source systems and loads it into Snowflake. The ingestion product and source platforms are environment-specific.
 - **Git (recommended)** — version control and review of project changes.
@@ -57,8 +57,9 @@ Retail data can be distributed across operational systems and use inconsistent f
 2. Declare the loaded tables as dbt sources and configure the project connection.
 3. Build silver models to standardize fields, address duplicates and nulls, and test important keys and relationships.
 4. Build gold facts, dimensions, and aggregates using documented business rules.
-5. Run dbt tests and review model documentation and lineage before publishing.
-6. Connect Power BI to the gold layer, configure its semantic model and refresh, and share reports with business users.
+5. Use incremental models for suitable large tables to process new or changed records instead of rebuilding the full table, reducing processing time and compute cost as data grows.
+6. Run dbt tests and review model documentation and lineage before publishing.
+7. Connect Power BI to the gold layer, configure its semantic model and refresh, and share reports with business users.
 
 Typical dbt commands, run from the dbt project directory:
 
@@ -81,6 +82,7 @@ Exact versions, source systems, schemas, credentials, model names, and ingestion
 - Reconcile row counts and key totals against source extracts where possible.
 - Monitor ingestion freshness, dbt job results, warehouse consumption, and Power BI refresh status.
 - Define how late-arriving data, corrections, deletes, and incremental rebuilds are handled.
+- Configure incremental models with an appropriate change-detection strategy and unique key; periodically validate results against a full refresh to ensure correctness.
 - Apply role-based access and limit sensitive customer data to what reporting requires.
 - Document model owners, refresh cadence, metric definitions, and known limitations.
 - Data Lineage
