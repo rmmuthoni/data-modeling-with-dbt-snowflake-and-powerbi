@@ -1,3 +1,10 @@
+{{
+  config(
+    materialized = 'incremental',
+    unique_key = 'sales_id'
+    )
+}}
+
 WITH silver_sales AS (
     SELECT
         sales_id,
@@ -11,6 +18,9 @@ WITH silver_sales AS (
         net_amount,
         payment_method
     FROM {{ ref('silver_sales') }}
+    {% if is_incremental() %}
+    WHERE date_sk > (SELECT MAX(date_sk) FROM {{ this }})
+    {% endif %}
 ),
 
 bronze_date AS (

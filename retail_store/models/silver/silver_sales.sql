@@ -1,3 +1,10 @@
+{{
+  config(
+    materialized = 'incremental',
+    unique_key = 'sales_id'
+    )
+}}
+
 WITH bronze_sales AS (
     SELECT 
         CAST(sales_id AS BIGINT) AS sales_id,
@@ -16,6 +23,9 @@ WITH bronze_sales AS (
         _ingested_at,
         source_system
     FROM {{ ref('bronze_sales') }} 
+    {% if is_incremental() %}
+    WHERE date_sk > (SELECT MAX(date_sk) FROM {{this }})
+    {% endif %}
 ),
 
 -- Remove Deuplicates if Any 
